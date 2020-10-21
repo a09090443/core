@@ -1,5 +1,6 @@
 package com.zipe.payload
 
+import com.zipe.enum.ScheduleJobStatusEnum
 import org.quartz.JobDataMap
 
 data class ScheduleJobDetail(
@@ -15,5 +16,6 @@ data class ScheduleJobDetail(
     val repeatTimes: Int = 0,
     val timeUnit: Int = 0,
     val jobDataMap: JobDataMap? = JobDataMap(),
-    var errorMessage: String = ""
+    var errorMessage: String = "",
+    var test: ScheduleJobStatusEnum? = null
 )

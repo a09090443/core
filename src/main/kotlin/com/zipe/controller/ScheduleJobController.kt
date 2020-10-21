@@ -1,112 +1,85 @@
 package com.zipe.controller
 
-import com.zipe.enum.SheduleJobStatusEmun
+import com.zipe.entity.ScheduleJob
+import com.zipe.enum.ScheduleJobStatusEnum
 import com.zipe.job.AbstractJob
-import com.zipe.payload.ScheduleJobDetail
+import com.zipe.model.input.ScheduleJobInput
+import com.zipe.model.output.ScheduleJobOutput
 import com.zipe.service.IScheduleJobService
-import com.zipe.util.log.logger
 import org.quartz.SchedulerException
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import java.text.ParseException
 
 @RestController
 @RequestMapping("/job")
 class ScheduleJobController : AbstractJob() {
 
-    val logger = logger()
-
-    @Autowired
-    private lateinit var scheduleJobService: IScheduleJobService
-
     @PostMapping("/register")
     @Throws(Exception::class)
-    fun register(@RequestBody scheduleJobDetail: ScheduleJobDetail): ResponseEntity<ScheduleJobDetail> {
+    fun register(@RequestBody input: ScheduleJobInput): ScheduleJobOutput {
         try {
-            saveOrUpdateScheduleJobStatus(scheduleJobDetail, SheduleJobStatusEmun.START.status)
-            result = createJobProcess(scheduleJobDetail)
-            return run {
-                logger.error(result!!.errorMessage)
-                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(result)
-            }
+            val scheduleJob = saveOrUpdateScheduleJobStatus(input, ScheduleJobStatusEnum.START)
+            result = createJobProcess(scheduleJob)
         } catch (ex: SchedulerException) {
             logger.error("Error scheduling message", ex)
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(result)
+            return result
         } catch (e: ParseException) {
             e.printStackTrace()
         } catch (e: ClassNotFoundException) {
             e.printStackTrace()
         }
-        return ResponseEntity.ok(result!!)
+        return result
     }
 
     @DeleteMapping("/delete")
     @Throws(Exception::class)
-    fun delete(@RequestBody scheduleJobDetail: ScheduleJobDetail): ResponseEntity<ScheduleJobDetail> {
+    fun delete(@RequestBody input: ScheduleJobInput): ScheduleJobOutput {
         try {
-            scheduleJobService.delete(scheduleJobDetail.jobName)
+            scheduleJobService.delete(input.jobName)
         } catch (e: Exception) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(result)
+            logger.error("Error scheduling message", e)
+            return result
         }
-        result = deleteJobProcess(scheduleJobDetail)
-        return run {
-            logger.error(result!!.errorMessage)
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(result)
-        }
+        result = deleteJobProcess(ScheduleJob(jobName = input.jobName, group = input.group))
+        return result
     }
 
     @PostMapping("/stop")
     @Throws(Exception::class)
-    fun stop(@RequestBody scheduleJobDetail: ScheduleJobDetail): ResponseEntity<ScheduleJobDetail> {
+    fun stop(@RequestBody input: ScheduleJobInput): ScheduleJobOutput {
         try {
-            saveOrUpdateScheduleJobStatus(scheduleJobDetail, SheduleJobStatusEmun.SUSPEND.status)
+            val scheduleJob = saveOrUpdateScheduleJobStatus(input, ScheduleJobStatusEnum.SUSPEND)
+            result = suspendJobProcess(scheduleJob)
         } catch (e: Exception) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(result)
+            logger.error("Error scheduling message", e)
+            return result
         }
-        result = suspendJobProcess(scheduleJobDetail)
-        return run {
-            logger.error(result!!.errorMessage)
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(result)
-        }
+        return result
     }
 
     @PostMapping("/start")
     @Throws(Exception::class)
-    fun start(@RequestBody scheduleJobDetail: ScheduleJobDetail): ResponseEntity<ScheduleJobDetail> {
+    fun start(@RequestBody input: ScheduleJobInput): ScheduleJobOutput {
         try {
-            saveOrUpdateScheduleJobStatus(scheduleJobDetail, SheduleJobStatusEmun.START.status)
+            val scheduleJob = saveOrUpdateScheduleJobStatus(input, ScheduleJobStatusEnum.START)
+            result = resumeJobProcess(scheduleJob)
         } catch (e: Exception) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(result)
+            logger.error("Error scheduling message", e)
+            return result
         }
-        result = resumeJobProcess(scheduleJobDetail)
-        return run {
-            logger.error(result!!.errorMessage)
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(result)
-        }
+        return result
     }
 
+    @PostMapping("/once")
     @Throws(Exception::class)
-    private fun saveOrUpdateScheduleJobStatus(scheduleJobDetail: ScheduleJobDetail, status: Int): ScheduleJobDetail {
-        with(scheduleJobDetail) {
-            this.status = status
-        }
-        try {
-            scheduleJobService.findByJobName(scheduleJobDetail.jobName) ?: scheduleJobService.saveOrUpdate(scheduleJobDetail)
-        } catch (e: Exception) {
-            logger.error(e.message)
-            throw e
-        }
-        return scheduleJobDetail
+    fun once(@RequestBody input: ScheduleJobInput) {
+        val scheduleJob = saveOrUpdateScheduleJobStatus(input, ScheduleJobStatusEnum.START)
     }
+
 }

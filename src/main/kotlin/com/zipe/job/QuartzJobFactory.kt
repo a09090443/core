@@ -1,13 +1,12 @@
 package com.zipe.job
 
 import com.zipe.entity.ScheduleJobLog
-import com.zipe.enum.SheduleJobStatusEmun
+import com.zipe.enum.ScheduleJobStatusEnum
 import com.zipe.repository.IScheduleJobLogRepository
 import org.quartz.JobExecutionContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.quartz.QuartzJobBean
 import java.time.LocalDateTime
-
 
 abstract class QuartzJobFactory : QuartzJobBean() {
     @Autowired
@@ -22,13 +21,13 @@ abstract class QuartzJobFactory : QuartzJobBean() {
         }
 
         try {
-            scheduleJobLog.status = SheduleJobStatusEmun.RUN.status
+            scheduleJobLog.status = ScheduleJobStatusEnum.RUN
             scheduleJobLogRepository.save(scheduleJobLog)
             executeJob(jobExecutionContext)
-            scheduleJobLog.status = SheduleJobStatusEmun.COMPLETE.status
+            scheduleJobLog.status = ScheduleJobStatusEnum.COMPLETE
         } catch (e: Exception) {
             scheduleJobLog.message = e.message ?: ""
-            scheduleJobLog.status = SheduleJobStatusEmun.ERROR.status
+            scheduleJobLog.status = ScheduleJobStatusEnum.ERROR
         } finally {
             scheduleJobLog.endTime = LocalDateTime.now()
             scheduleJobLogRepository.saveAndFlush(scheduleJobLog)

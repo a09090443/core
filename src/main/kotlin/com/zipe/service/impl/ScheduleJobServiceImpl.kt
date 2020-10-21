@@ -1,15 +1,17 @@
 package com.zipe.service.impl
 
 import com.zipe.entity.ScheduleJob
-import com.zipe.payload.ScheduleJobDetail
+import com.zipe.enum.ScheduleJobStatusEnum
+import com.zipe.model.input.ScheduleJobInput
 import com.zipe.repository.IScheduleJobRepository
 import com.zipe.service.IScheduleJobService
+import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-
+import java.util.*
 
 @Transactional
 @Service("scheduleJobService")
@@ -33,30 +35,28 @@ class ScheduleJobServiceImpl : IScheduleJobService {
         return scheduleJobRepository.findByJobName(jobName)
     }
 
-    override fun saveOrUpdate(scheduleJobDetail: ScheduleJobDetail) {
+    @Transactional(rollbackFor=[Exception::class])
+    override fun save(input: ScheduleJobInput, status: ScheduleJobStatusEnum): ScheduleJob {
 
         val scheduleJob = ScheduleJob().apply {
-            this.jobClass = scheduleJobDetail.classPath
-            this.jobName = scheduleJobDetail.jobName
-            this.jobGroup = scheduleJobDetail.group
-            this.jobDescription = scheduleJobDetail.description
+            BeanUtils.copyProperties(input, this)
 
             this.startTime = LocalDateTime.parse(
-                "${scheduleJobDetail.startDate} ${scheduleJobDetail.time}",
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                "${input.startDate} ${input.time}",
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withLocale(Locale.TAIWAN)
             )
             this.endTime = LocalDateTime.parse(
-                "${scheduleJobDetail.endDate} ${scheduleJobDetail.time}",
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                "${input.endDate} ${input.time}",
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withLocale(Locale.TAIWAN)
             )
-
-            this.status = scheduleJobDetail.status
-            this.executeTimes = scheduleJobDetail.repeatTimes
-            this.timeUnit = scheduleJobDetail.timeUnit
-            this.repeatInterval = scheduleJobDetail.interval
+            this.status = status
         }
 
-        scheduleJobRepository.save(scheduleJob)
+        scheduleJobRepository.save(scheduleJob).let { return scheduleJob }
+    }
+
+    override fun update(input: ScheduleJobInput, status: ScheduleJobStatusEnum): ScheduleJob {
+        TODO("Not yet implemented")
     }
 
     @Throws(Exception::class)

@@ -1,10 +1,12 @@
 package com.zipe.entity
 
-import com.zipe.entity.base.BaseEntity
+import com.zipe.enum.ScheduleJobStatusEnum
 import java.io.Serializable
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.Table
 
@@ -23,7 +25,8 @@ data class ScheduleJobLog(
     var jobDescription: String = "",
 
     @Column(name = "status")
-    var status: Int = 0,
+    @Enumerated(EnumType.STRING)
+    var status: ScheduleJobStatusEnum? = null,
 
     @Column(name = "start_time")
     var startTime: LocalDateTime? = null,
@@ -34,4 +37,4 @@ data class ScheduleJobLog(
     @Column(name = "message")
     var message: String = ""
 
-) : Serializable, BaseEntity()
+) : Serializable

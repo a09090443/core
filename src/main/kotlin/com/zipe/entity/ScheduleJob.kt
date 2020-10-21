@@ -1,10 +1,14 @@
 package com.zipe.entity
 
-import com.zipe.entity.base.BaseEntity
+import com.zipe.enum.ScheduleEnum
+import com.zipe.enum.ScheduleJobStatusEnum
+import org.quartz.JobDataMap
 import java.io.Serializable
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.Table
 
@@ -12,38 +16,43 @@ import javax.persistence.Table
 @Table(name = "schedule_job")
 data class ScheduleJob(
 
-    @Id
     @Column(name = "id")
     val id: Int = 0,
 
+    @Id
     @Column(name = "job_name", unique = true)
     var jobName: String = "",
 
     @Column(name = "job_group")
-    var jobGroup: String = "",
+    var group: String = "",
 
     @Column(name = "job_description")
-    var jobDescription: String = "",
+    var description: String = "",
 
     @Column(name = "job_class")
-    var jobClass: String = "",
+    var classPath: String = "",
 
     @Column(name = "status")
-    var status: Int = 0,
+    @Enumerated(EnumType.STRING)
+    var status: ScheduleJobStatusEnum? = null,
 
     @Column(name = "time_unit")
-    var timeUnit: Int = 0,
+    @Enumerated(EnumType.STRING)
+    var timeUnit: ScheduleEnum? = null,
 
     @Column(name = "repeat_interval")
-    var repeatInterval: Int = 0,
+    var interval: Int = 0,
 
-    @Column(name = "execute_times")
-    var executeTimes: Int = 0,
+    @Column(name = "repeat_times")
+    var repeatTimes: Int = 0,
 
-    @Column(name = "start_time")
+    @Column(name = "start_time", columnDefinition = "TIMESTAMP")
     var startTime: LocalDateTime? = null,
 
-    @Column(name = "end_time")
-    var endTime: LocalDateTime? = null
+    @Column(name = "end_time", columnDefinition = "TIMESTAMP")
+    var endTime: LocalDateTime? = null,
 
-) : Serializable, BaseEntity()
+    @Transient
+    var jobDataMap: JobDataMap = JobDataMap()
+
+) : Serializable

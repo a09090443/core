@@ -1,74 +1,79 @@
 package com.zipe.job
 
-import com.zipe.enum.ScheduleEmun
-import com.zipe.enum.SheduleJobStatusEmun
-import com.zipe.payload.ScheduleJobDetail
-import org.apache.commons.lang.StringUtils
-import org.quartz.*
+import com.zipe.entity.ScheduleJob
+import com.zipe.enum.ScheduleJobStatusEnum
+import com.zipe.model.input.ScheduleJobInput
+import com.zipe.model.output.ScheduleJobOutput
+import com.zipe.service.IScheduleJobService
+import com.zipe.util.log.logger
+import org.quartz.Job
+import org.quartz.JobBuilder
+import org.quartz.JobDetail
+import org.quartz.JobKey
+import org.quartz.Scheduler
+import org.quartz.SchedulerConfigException
+import org.quartz.SchedulerException
+import org.quartz.Trigger
+import org.quartz.TriggerBuilder
+import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import java.text.ParseException
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 abstract class AbstractJob {
 
-    @Autowired
-    private lateinit var scheduler: Scheduler
+    val logger = logger()
 
-    protected var result: ScheduleJobDetail? = null
+    @Autowired
+    protected lateinit var scheduler: Scheduler
+
+    @Autowired
+    protected lateinit var scheduleJobService: IScheduleJobService
+
+    protected lateinit var result: ScheduleJobOutput
 
     @Throws(ClassNotFoundException::class, ParseException::class, SchedulerException::class)
-    fun executeJobProcess(scheduleJobDetail: ScheduleJobDetail): ScheduleJobDetail {
-        val dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val startTime = LocalDateTime.parse(
-            "${scheduleJobDetail.startDate} ${scheduleJobDetail.time}",
-            dtf
-        )
-        val endTime = LocalDateTime.parse(
-            "${scheduleJobDetail.endDate} ${scheduleJobDetail.time}",
-            dtf
-        )
+    fun executeJobProcess(scheduleJob: ScheduleJob) {
         try {
-            val jobDetail = buildJobDetail(scheduleJobDetail)
-            val trigger = buildJobTrigger(jobDetail, startTime, endTime, scheduleJobDetail)
+            val jobDetail = buildJobDetail(scheduleJob)
+            val trigger = buildJobTrigger(jobDetail, scheduleJob.startTime, scheduleJob.endTime, scheduleJob)
             scheduler.scheduleJob(jobDetail, trigger)
         } catch (e: SchedulerException) {
             throw e
         }
-        return scheduleJobDetail
     }
 
     @Throws(SchedulerException::class, ParseException::class, ClassNotFoundException::class)
-    fun deleteJobProcess(scheduleJobDetail: ScheduleJobDetail): ScheduleJobDetail {
-        return scheduleJobStatusProcess(scheduleJobDetail, SheduleJobStatusEmun.DELETE)
+    fun deleteJobProcess(scheduleJob: ScheduleJob): ScheduleJobOutput {
+        return scheduleJobStatusProcess(scheduleJob, ScheduleJobStatusEnum.DELETE)
     }
 
     @Throws(SchedulerException::class, ParseException::class, ClassNotFoundException::class)
-    fun suspendJobProcess(scheduleJobDetail: ScheduleJobDetail): ScheduleJobDetail {
-        return scheduleJobStatusProcess(scheduleJobDetail, SheduleJobStatusEmun.SUSPEND)
+    fun suspendJobProcess(scheduleJob: ScheduleJob): ScheduleJobOutput {
+        return scheduleJobStatusProcess(scheduleJob, ScheduleJobStatusEnum.SUSPEND)
     }
 
     @Throws(SchedulerException::class, ParseException::class, ClassNotFoundException::class)
-    fun resumeJobProcess(scheduleJobDetail: ScheduleJobDetail): ScheduleJobDetail {
-        return scheduleJobStatusProcess(scheduleJobDetail, SheduleJobStatusEmun.RESUME)
+    fun resumeJobProcess(scheduleJob: ScheduleJob): ScheduleJobOutput {
+        return scheduleJobStatusProcess(scheduleJob, ScheduleJobStatusEnum.RESUME)
     }
 
     @Throws(SchedulerException::class, ParseException::class, ClassNotFoundException::class)
-    fun createJobProcess(scheduleJobDetail: ScheduleJobDetail): ScheduleJobDetail {
-        return scheduleJobStatusProcess(scheduleJobDetail, SheduleJobStatusEmun.CREATE)
+    fun createJobProcess(scheduleJob: ScheduleJob): ScheduleJobOutput {
+        return scheduleJobStatusProcess(scheduleJob, ScheduleJobStatusEnum.CREATE)
     }
 
     @Suppress("UNCHECKED_CAST")
     @Throws(ClassNotFoundException::class)
-    fun buildJobDetail(scheduleJobDetail: ScheduleJobDetail): JobDetail {
-        val clazz: Class<out Job> = Class.forName(scheduleJobDetail.classPath) as Class<out Job>
+    fun buildJobDetail(scheduleJob: ScheduleJob): JobDetail {
+        val clazz: Class<out Job> = Class.forName(scheduleJob.classPath) as Class<out Job>
 
         return JobBuilder.newJob(clazz)
-            .withIdentity(scheduleJobDetail.jobName, scheduleJobDetail.group)
-            .withDescription(scheduleJobDetail.description)
-            .usingJobData(scheduleJobDetail.jobDataMap)
+            .withIdentity(scheduleJob.jobName, scheduleJob.group)
+            .withDescription(scheduleJob.description)
+            .usingJobData(scheduleJob.jobDataMap)
             .storeDurably()
             .build()
     }
@@ -77,48 +82,73 @@ abstract class AbstractJob {
         jobDetail: JobDetail,
         startTime: LocalDateTime?,
         endTime: LocalDateTime?,
-        scheduleJobDetail: ScheduleJobDetail
+        scheduleJob: ScheduleJob
     ): Trigger {
         return TriggerBuilder.newTrigger()
             .forJob(jobDetail)
-            .withIdentity(jobDetail.key.name, scheduleJobDetail.jobName)
-            .withDescription(scheduleJobDetail.description)
+            .withIdentity(jobDetail.key.name, scheduleJob.jobName)
+            .withDescription(scheduleJob.description)
             .startAt(Date.from(startTime?.atZone(ZoneId.systemDefault())?.toInstant()))
             .endAt(Date.from(endTime?.atZone(ZoneId.systemDefault())?.toInstant()))
+            .startNow()
             .withSchedule(
-                ScheduleEmun.getTimeUnit(scheduleJobDetail.timeUnit)
-                    ?.setCycle(scheduleJobDetail.interval, scheduleJobDetail.repeatTimes)
+                scheduleJob.timeUnit?.setCycle(scheduleJob.interval, scheduleJob.repeatTimes)
             )
+            .build()
+    }
+
+    private fun buildOnceJobTrigger(
+        jobDetail: JobDetail,
+        scheduleJob: ScheduleJob
+    ): Trigger {
+        return TriggerBuilder.newTrigger()
+            .withIdentity(jobDetail.key.name, scheduleJob.jobName)
+            .withDescription(scheduleJob.description).startNow()
             .build()
     }
 
     @Throws(SchedulerException::class, ParseException::class, ClassNotFoundException::class)
     private fun scheduleJobStatusProcess(
-        scheduleJobDetail: ScheduleJobDetail,
-        sheduleJobStatusEmun: SheduleJobStatusEmun
-    ): ScheduleJobDetail {
-        val jobKey = JobKey.jobKey(scheduleJobDetail.jobName, scheduleJobDetail.group)
+        scheduleJob: ScheduleJob,
+        scheduleJobStatusEnum: ScheduleJobStatusEnum
+    ): ScheduleJobOutput {
+        val jobKey = JobKey.jobKey(scheduleJob.jobName, scheduleJob.group)
+        val output = ScheduleJobOutput().apply { BeanUtils.copyProperties(scheduleJob, this) }
         try {
-            if (!scheduler.checkExists(jobKey) && sheduleJobStatusEmun.desc != SheduleJobStatusEmun.CREATE.desc) {
+            if (!scheduler.checkExists(jobKey) && scheduleJobStatusEnum.name != ScheduleJobStatusEnum.CREATE.name) {
                 throw SchedulerConfigException("The job is not exist.")
             }
         } catch (e: SchedulerException) {
-            scheduleJobDetail.errorMessage = e.message ?: StringUtils.EMPTY
+            output.errorMessage = e.message
         }
         try {
-            when (sheduleJobStatusEmun) {
-                SheduleJobStatusEmun.CREATE -> {
+            when (scheduleJobStatusEnum) {
+                ScheduleJobStatusEnum.CREATE -> {
                     scheduler.deleteJob(jobKey)
-                    executeJobProcess(scheduleJobDetail)
+                    executeJobProcess(scheduleJob)
                 }
-                SheduleJobStatusEmun.SUSPEND -> scheduler.pauseJob(jobKey)
-                SheduleJobStatusEmun.RESUME -> scheduler.resumeJob(jobKey)
-                SheduleJobStatusEmun.DELETE -> scheduler.deleteJob(jobKey)
+                ScheduleJobStatusEnum.SUSPEND -> scheduler.pauseJob(jobKey)
+                ScheduleJobStatusEnum.RESUME -> scheduler.resumeJob(jobKey)
+                ScheduleJobStatusEnum.DELETE -> scheduler.deleteJob(jobKey)
             }
         } catch (e: SchedulerException) {
-            e.printStackTrace()
-            scheduleJobDetail.errorMessage = "Schedule job : ${scheduleJobDetail.jobName} error."
+            logger.error("Schedule action error {}", scheduleJobStatusEnum.name)
+            output.errorMessage = "${scheduleJobStatusEnum.name} Schedule job : ${scheduleJob.jobName} error."
         }
-        return scheduleJobDetail
+        return output
+    }
+
+    @Throws(Exception::class)
+    protected fun saveOrUpdateScheduleJobStatus(input: ScheduleJobInput, status: ScheduleJobStatusEnum): ScheduleJob {
+        val scheduleJob: ScheduleJob
+        try {
+            scheduleJob = scheduleJobService.findByJobName(input.jobName) ?: ScheduleJob()
+            BeanUtils.copyProperties(input, scheduleJob)
+            scheduleJobService.save(input, status)
+        } catch (e: Exception) {
+            logger.error(e.message)
+            throw e
+        }
+        return scheduleJob
     }
 }

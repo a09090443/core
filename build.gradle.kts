@@ -36,6 +36,7 @@ dependencies {
 
     api("com.zaxxer:HikariCP")
     api("org.hibernate:hibernate-ehcache")
+    api("org.hibernate:hibernate-java8:5.4.21.Final")
     api("org.hibernate:hibernate-validator:${property("hibernateValidatorVersion")}")
     api("mysql:mysql-connector-java")
     api("com.thedeanda:lorem:${property("loremVersion")}")

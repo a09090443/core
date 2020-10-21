@@ -2,7 +2,9 @@ package com.zipe.entity.base
 
 import java.time.LocalDateTime
 import javax.persistence.Column
+import javax.persistence.MappedSuperclass
 
+@MappedSuperclass
 open class BaseEntity {
 
     @Column(name = "update_time", nullable = true)
