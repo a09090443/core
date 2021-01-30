@@ -22,7 +22,7 @@ dependencies {
 
     api("org.springframework.cloud:spring-cloud-starter-config")
     api("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-    api("org.springframework.cloud:spring-cloud-starter-oauth2")
+    api("org.springframework.cloud:spring-cloud-starter-oauth2:${property("springCloudOauth2Version")}")
 
     api("org.springframework.security:spring-security-core")
     api("org.springframework.security:spring-security-config")
@@ -37,7 +37,7 @@ dependencies {
 
     api("com.zaxxer:HikariCP")
     api("org.hibernate:hibernate-ehcache")
-    api("org.hibernate:hibernate-java8:5.4.21.Final")
+    api("org.hibernate:hibernate-java8:${property("hibernateJava8Version")}")
     api("org.hibernate:hibernate-validator:${property("hibernateValidatorVersion")}")
     api("mysql:mysql-connector-java")
     api("com.thedeanda:lorem:${property("loremVersion")}")
