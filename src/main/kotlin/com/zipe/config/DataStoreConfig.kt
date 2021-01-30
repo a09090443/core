@@ -15,11 +15,11 @@ class DataStoreConfig {
     @Autowired
     private lateinit var entityManagerFactory: EntityManagerFactory
 
-    @Bean
-    fun sessionFactory(): SessionFactory {
-        if (entityManagerFactory.unwrap(SessionFactory::class.java) == null) {
-            throw NullPointerException("factory is not a hibernate factory")
-        }
-        return entityManagerFactory.unwrap(SessionFactory::class.java)
-    }
+//    @Bean
+//    fun sessionFactory(): SessionFactory {
+//        if (entityManagerFactory.unwrap(SessionFactory::class.java) == null) {
+//            throw NullPointerException("factory is not a hibernate factory")
+//        }
+//        return entityManagerFactory.unwrap(SessionFactory::class.java)
+//    }
 }

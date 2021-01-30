@@ -6,16 +6,8 @@ import javax.persistence.MappedSuperclass
 
 @MappedSuperclass
 open class BaseEntity {
-
-    @Column(name = "update_time", nullable = true)
     val updateTime: LocalDateTime = LocalDateTime.now()
-
-    @Column(name = "update_user", nullable = true)
-    val updateBy: String = ""
-
-    @Column(name = "create_time", nullable = true)
+    val updater: String = ""
     val createTime: LocalDateTime = LocalDateTime.now()
-
-    @Column(name = "create_user", nullable = true)
-    val createBy: String = ""
+    val creator: String = ""
 }

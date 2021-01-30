@@ -9,6 +9,7 @@ dependencies {
     api("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     api("org.springframework.boot:spring-boot-starter-tomcat")
+    api("org.springframework.boot:spring-boot-autoconfigure")
     api("org.springframework:spring-orm")
     api("org.springframework.boot:spring-boot-starter-web")
     api("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -42,7 +43,6 @@ dependencies {
     api("com.thedeanda:lorem:${property("loremVersion")}")
     api("javax.validation:validation-api:${property("validationApiVersion")}")
     api("commons-io:commons-io:${property("commonIoVersion")}")
-    api("com.googlecode.log4jdbc:log4jdbc:${property("log4jdbcVersion")}")
     api("com.squareup.okhttp3:okhttp:${property("okhttpVersion")}")
     api("com.google.guava:guava:${property("guavaVersion")}")
     api("org.projectlombok:lombok:${property("lombokVersion")}")
@@ -53,6 +53,7 @@ dependencies {
     api("com.vladmihalcea:hibernate-types-52:${property("hibernateTypesVersion")}")
     api("org.apache.commons:commons-pool2:${property("pool2Version")}")
     api("redis.clients:jedis:${property("jedisVersion")}")
+    api("p6spy:p6spy:${property("p6spyVersion")}")
 //    api("org.quartz-scheduler:quartz:${property("quartzVersion")}")
 
     api("org.slf4j:slf4j-api:${property("slf4jApiVersion")}")
