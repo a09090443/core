@@ -82,7 +82,6 @@ object FileUtil {
             bufferedReader?.close()
             fileReader?.close()
         }
-        println("读取出来的文件内容是：\r\n$result")
         return result
     }
 }
