@@ -80,6 +80,7 @@ class ScheduleJobController : AbstractJob() {
     @Throws(Exception::class)
     fun once(@RequestBody input: ScheduleJobInput) {
         val scheduleJob = saveOrUpdateScheduleJobStatus(input, ScheduleJobStatusEnum.START)
+//        buildOnceJobTrigger(input.jobName, scheduleJob)
     }
 
 }
