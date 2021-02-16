@@ -132,6 +132,7 @@ abstract class AbstractJob {
                 ScheduleJobStatusEnum.SUSPEND -> scheduler.pauseJob(jobKey)
                 ScheduleJobStatusEnum.RESUME -> scheduler.resumeJob(jobKey)
                 ScheduleJobStatusEnum.DELETE -> scheduler.deleteJob(jobKey)
+                else -> throw SchedulerException()
             }
         } catch (e: SchedulerException) {
             logger.error("Schedule action error {}", scheduleJobStatusEnum.name)

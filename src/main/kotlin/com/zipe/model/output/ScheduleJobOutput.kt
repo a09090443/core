@@ -1,6 +1,7 @@
 package com.zipe.model.output
 
 import org.quartz.JobDataMap
+import java.time.LocalDateTime
 
 data class ScheduleJobOutput(
     val jobName: String = "",
@@ -8,8 +9,8 @@ data class ScheduleJobOutput(
     val description: String = "",
     val classPath: String = "",
     var status: Int = 0,
-    val startDate: String = "",
-    val endDate: String = "",
+    val startDate: LocalDateTime? = null,
+    val endDate: LocalDateTime? = null,
     val time: String = "",
     val interval: Int = 0,
     val repeatTimes: Int = 0,

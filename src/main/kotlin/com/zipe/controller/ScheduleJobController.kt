@@ -5,10 +5,7 @@ import com.zipe.enum.ScheduleJobStatusEnum
 import com.zipe.job.AbstractJob
 import com.zipe.model.input.ScheduleJobInput
 import com.zipe.model.output.ScheduleJobOutput
-import com.zipe.service.IScheduleJobService
 import org.quartz.SchedulerException
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -30,9 +27,9 @@ class ScheduleJobController : AbstractJob() {
             logger.error("Error scheduling message", ex)
             return result
         } catch (e: ParseException) {
-            e.printStackTrace()
+            throw e
         } catch (e: ClassNotFoundException) {
-            e.printStackTrace()
+            throw e
         }
         return result
     }

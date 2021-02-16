@@ -16,7 +16,7 @@ class ApplicationContextHolder : SpringBeanJobFactory(), ApplicationContextAware
 
     @Throws(BeansException::class)
     override fun setApplicationContext(ctx: ApplicationContext) {
-        beanFactory = ctx.getAutowireCapableBeanFactory()
+        beanFactory = ctx.autowireCapableBeanFactory
         context = ctx
     }
 

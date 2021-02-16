@@ -13,7 +13,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-@Transactional
 @Service("scheduleJobService")
 class ScheduleJobServiceImpl : IScheduleJobService {
 
