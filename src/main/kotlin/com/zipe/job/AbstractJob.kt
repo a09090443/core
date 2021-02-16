@@ -17,11 +17,13 @@ import org.quartz.Trigger
 import org.quartz.TriggerBuilder
 import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import java.text.ParseException
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.*
+import java.util.Date
 
+@Component
 abstract class AbstractJob {
 
     val logger = logger()

@@ -6,12 +6,14 @@ import com.zipe.repository.IScheduleJobLogRepository
 import org.quartz.JobExecutionContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.quartz.QuartzJobBean
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 abstract class QuartzJobFactory : QuartzJobBean() {
     @Autowired
-    private lateinit var scheduleJobLogRepository: IScheduleJobLogRepository
+    lateinit var scheduleJobLogRepository: IScheduleJobLogRepository
 
+    @Transactional
     override fun executeInternal(jobExecutionContext: JobExecutionContext) {
 
         val scheduleJobLog = ScheduleJobLog().apply {
@@ -34,5 +36,5 @@ abstract class QuartzJobFactory : QuartzJobBean() {
         }
     }
 
-    abstract fun executeJob(jobExecutionContext: JobExecutionContext?)
+    abstract fun executeJob(jobExecutionContext: JobExecutionContext)
 }
