@@ -43,7 +43,7 @@ class ScheduleJobController : AbstractJob() {
             logger.error("Error scheduling message", e)
             return result
         }
-        result = deleteJobProcess(ScheduleJob(jobName = input.jobName, group = input.group))
+        result = deleteJobProcess(ScheduleJob(jobName = input.jobName, jobGroup = input.jobGroup))
         return result
     }
 

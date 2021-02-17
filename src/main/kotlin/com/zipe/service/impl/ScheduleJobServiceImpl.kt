@@ -59,6 +59,7 @@ class ScheduleJobServiceImpl : IScheduleJobService {
     }
 
     @Throws(Exception::class)
+    @Transactional
     override fun delete(jobName: String) {
         scheduleJobRepository.deleteByJobName(jobName)
     }
