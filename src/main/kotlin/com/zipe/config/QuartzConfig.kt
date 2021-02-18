@@ -1,5 +1,7 @@
 package com.zipe.config
 
+import com.zipe.model.SystemConfigProperties
+import org.quartz.spi.JobFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.config.PropertiesFactoryBean
 import org.springframework.context.ApplicationContext
@@ -12,10 +14,8 @@ import org.springframework.transaction.PlatformTransactionManager
 import java.io.IOException
 import java.util.Properties
 import javax.sql.DataSource
-import org.quartz.spi.JobFactory
 
 @Configuration
-@Import(DataStoreConfig::class) // 導入數據源的配置
 class QuartzConfig {
 
     @Autowired
@@ -26,6 +26,9 @@ class QuartzConfig {
 
     @Autowired
     lateinit var transactionManager: PlatformTransactionManager
+
+    @Autowired
+    lateinit var systemConfigProperties: SystemConfigProperties
 
     /**
      * Create the job factory bean
@@ -42,7 +45,9 @@ class QuartzConfig {
     @Throws(IOException::class)
     fun scheduler(): SchedulerFactoryBean {
         val scheduler = SchedulerFactoryBean()
-        scheduler.setDataSource(dataSource)
+        if (systemConfigProperties.jobUsingDatabase) {
+            scheduler.setDataSource(dataSource)
+        }
         scheduler.setTransactionManager(transactionManager)
         scheduler.setOverwriteExistingJobs(true)
         scheduler.setQuartzProperties(quartzProperties())
