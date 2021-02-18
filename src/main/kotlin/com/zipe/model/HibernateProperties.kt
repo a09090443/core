@@ -10,5 +10,6 @@ data class HibernateProperties(
     var factoryClass: String = "",
     var useSecondLevelCache: Boolean = false,
     var useQueryCache: Boolean = false,
-    var useMinimalPuts: Boolean = false
+    var useMinimalPuts: Boolean = false,
+    var hbm2ddlAuto: String = ""
 )

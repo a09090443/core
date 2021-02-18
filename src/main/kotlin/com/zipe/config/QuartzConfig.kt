@@ -14,7 +14,6 @@ import java.util.Properties
 import javax.sql.DataSource
 import org.quartz.spi.JobFactory
 
-
 @Configuration
 @Import(DataStoreConfig::class) // 導入數據源的配置
 class QuartzConfig {
