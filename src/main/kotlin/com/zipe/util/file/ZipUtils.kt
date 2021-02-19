@@ -1,8 +1,15 @@
 package com.zipe.util.file
 
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
+import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
-import java.util.*
+import java.util.ArrayList
+import java.util.Enumeration
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
 import java.util.zip.ZipFile
@@ -12,11 +19,11 @@ object ZipUtils {
     private const val BUFF_SIZE = 1024 * 1024 // 1M Byte
 
     /**
-     * 压缩目录
+     * 壓縮目錄
      *
-     * @param srcPath         被压缩的目录路径
-     * @param destZipFilePath 目标zip文件路径
-     * @param excludeTopDir   是否排除掉顶层目录
+     * @param srcPath         被壓縮的目錄路徑
+     * @param destZipFilePath 目標zip文件路徑
+     * @param excludeTopDir   是否排除掉頂層目錄
      * @throws IOException
      */
     fun zip(
@@ -41,7 +48,7 @@ object ZipUtils {
     }
 
     /**
-     * 压缩目录时，去掉最顶层的目录。
+     * 壓縮目錄時，去掉最頂層的目錄。
      */
     private fun zipDirExcludeTopDir(zipOut: ZipOutputStream, srcDir: File) {
         val subFiles = srcDir.listFiles()
@@ -79,11 +86,11 @@ object ZipUtils {
     }
 
     /**
-     * 解压缩一个文件
+     * 解壓縮一個文件
      *
-     * @param zipFile    压缩文件
-     * @param folderPath 解压缩的目标目录
-     * @throws IOException 当解压缩过程出错时抛出
+     * @param zipFile    壓縮文件
+     * @param folderPath 解壓縮的目標目錄
+     * @throws IOException 當解壓縮過程出錯時拋出
      */
     @Throws(ZipException::class, IOException::class)
     fun upZipFile(zipFile: File?, folderPath: String) {
@@ -121,13 +128,13 @@ object ZipUtils {
     }
 
     /**
-     * 解压文件名包含传入文字的文件
+     * 解壓文件名包含傳入文字的文件
      *
-     * @param zipFile      压缩文件
-     * @param folderPath   目标文件夹
-     * @param nameContains 传入的文件匹配名
-     * @throws ZipException 压缩格式有误时抛出
-     * @throws IOException  IO错误时抛出
+     * @param zipFile      壓縮文件
+     * @param folderPath   目標文件夾
+     * @param nameContains 傳入的文件匹配名
+     * @throws ZipException 壓縮格式有誤時拋出
+     * @throws IOException  IO錯誤時拋出
      */
     @Throws(ZipException::class, IOException::class)
     fun upZipSelectedFile(
@@ -171,12 +178,12 @@ object ZipUtils {
     }
 
     /**
-     * 获得压缩文件内文件列表
+     * 獲得壓縮文件內文件列表
      *
-     * @param zipFile 压缩文件
-     * @return 压缩文件内文件名称
-     * @throws ZipException 压缩文件格式有误时抛出
-     * @throws IOException  当解压缩过程出错时抛出
+     * @param zipFile 壓縮文件
+     * @return 壓縮文件內文件名稱
+     * @throws ZipException 壓縮文件格式有誤時拋出
+     * @throws IOException  當解壓縮過程出錯時拋出
      */
     @Throws(ZipException::class, IOException::class)
     fun getEntriesNames(zipFile: File?): ArrayList<String> {
@@ -196,12 +203,12 @@ object ZipUtils {
     }
 
     /**
-     * 获得压缩文件内压缩文件对象以取得其属性
+     * 獲得壓縮文件內壓縮文件對像以取得其屬性
      *
-     * @param zipFile 压缩文件
-     * @return 返回一个压缩文件列表
-     * @throws ZipException 压缩文件格式有误时抛出
-     * @throws IOException  IO操作有误时抛出
+     * @param zipFile 壓縮文件
+     * @return 返回一個壓縮文件列表
+     * @throws ZipException 壓縮文件格式有誤時拋出
+     * @throws IOException  IO操作有誤時拋出
      */
     @Throws(ZipException::class, IOException::class)
     fun getEntriesEnumeration(zipFile: File?): Enumeration<*> {
@@ -210,10 +217,10 @@ object ZipUtils {
     }
 
     /**
-     * 取得压缩文件对象的名称
+     * 取得壓縮文件對象的名稱
      *
-     * @param entry 压缩文件对象
-     * @return 压缩文件对象的名称
+     * @param entry 壓縮文件對象
+     * @return 壓縮文件對象的名稱
      * @throws UnsupportedEncodingException
      */
     @Throws(UnsupportedEncodingException::class)
@@ -276,7 +283,7 @@ object ZipUtils {
                     }
                 } catch (ex: IOException) {
                     ex.printStackTrace()
-                    throw IOException("解压失败：$ex")
+                    throw IOException("解壓失敗：$ex")
                 } finally {
                     if (inputStream != null) {
                         try {
@@ -294,7 +301,7 @@ object ZipUtils {
             }
         } catch (ex: IOException) {
             ex.printStackTrace()
-            throw IOException("解压失败：$ex")
+            throw IOException("解壓失敗：$ex")
         } finally {
             if (zipFile != null) {
                 try {

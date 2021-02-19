@@ -1,6 +1,6 @@
 package com.zipe.util.file
 
-import java.util.*
+import java.util.Properties
 
 class LoadPropertiesUtils(fileName: String): Properties() {
 

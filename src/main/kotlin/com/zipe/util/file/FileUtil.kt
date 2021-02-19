@@ -1,13 +1,17 @@
 package com.zipe.util.file
 
-import java.io.*
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
+import java.io.FileWriter
+import java.io.IOException
 
 object FileUtil {
 
     /**
-     * 创建文件
-     * @param filePath 文件路径(不要以/结尾)
-     * @param fileName 文件名称（包含后缀,如：ReadMe.txt）
+     * 創建文件
+     * @param filePath 文件路徑(不要以/結尾)
+     * @param fileName 文件名稱（包含後綴,如：ReadMe.txt）
      * @throws IOException
      */
     @Throws(IOException::class)
@@ -22,12 +26,12 @@ object FileUtil {
     }
 
     /**
-     * 写文件
+     * 寫文件
      *
-     * @param content 文件内容
-     * @param filePath 文件路径(不要以/结尾)
-     * @param fileName 文件名称（包含后缀,如：ReadMe.txt）
-     * 新内容
+     * @param content 文件內容
+     * @param filePath 文件路徑(不要以/結尾)
+     * @param fileName 文件名稱（包含後綴,如：ReadMe.txt）
+     * @param append 新内容
      * @throws IOException
      */
     fun writeTxtFile(content: String, filePath: String, fileName: String, append: Boolean): Boolean {
@@ -47,9 +51,9 @@ object FileUtil {
     }
 
     /**
-     * 读TXT文件内容
-     * @param filePath 文件路径(不要以 / 结尾)
-     * @param fileName 文件名称（包含后缀,如：ReadMe.txt）
+     * 讀TXT文件內容
+     * @param filePath 文件路徑(不要以 / 結尾)
+     * @param fileName 文件名稱（包含後綴,如：ReadMe.txt）
      * @return
      */
     @Throws(Exception::class)

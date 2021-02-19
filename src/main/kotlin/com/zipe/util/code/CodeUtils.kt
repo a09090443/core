@@ -1,10 +1,10 @@
-package com.zipe.code
+package com.zipe.util.code
 
 import java.util.*
 import kotlin.experimental.and
 
 /**
- * 编码工具
+ * 編碼工具
  */
 object CodeUtils {
 
@@ -50,11 +50,10 @@ object CodeUtils {
     }
 
     /**
-     * 将字节转换为十六进制的字符串（）
+     * 將字節轉換為十六進制的字符串
      *
      * @param bytesCommand
      * @return
-     * @from 忘了
      */
     fun bytesToHexString(bytesCommand: ByteArray?): String? {
         val stringBuilder = StringBuilder("")
@@ -73,7 +72,7 @@ object CodeUtils {
     }
 
     /**
-     * 将十六进制的字符串转换成字节
+     * 將十六進制的字符串轉換成字節
      *
      * @param commandStr 7E 18 00 07 00 04 01 02 03 04 00 05 00 1A 7E
      * @return
@@ -88,7 +87,6 @@ object CodeUtils {
                 commands[i] = Integer.parseInt(tempStr[i], 16).toByte()
             } catch (o_o: Exception) {
                 commands[i] = 0
-//                Log.e("命令转换出错", tempStr[i])
             }
 
         }

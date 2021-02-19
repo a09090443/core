@@ -1,5 +1,6 @@
 package com.zipe.base.controller
 
+import org.apache.commons.lang.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -42,7 +43,7 @@ abstract class BaseController {
 
     protected open fun getMessage(key: String, vararg args: String): String {
         return if (key.isBlank()) {
-            ""
+            StringUtils.EMPTY
         } else {
             messageSource.getMessage(key, args, currentLocale)
         }
