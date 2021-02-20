@@ -2,7 +2,6 @@ package com.zipe.config
 
 import com.zipe.model.CacheProperties
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.CachingConfigurerSupport
 import org.springframework.cache.annotation.EnableCaching
@@ -14,15 +13,12 @@ import org.springframework.data.redis.cache.RedisCacheManager
 import org.springframework.data.redis.cache.RedisCacheWriter
 import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer
-import org.springframework.data.redis.serializer.RedisSerializationContext
 import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair
 import org.springframework.data.redis.serializer.StringRedisSerializer
 import java.time.Duration
 
 @Configuration
-@EnableConfigurationProperties(CacheProperties::class)
 @EnableCaching
 class RedisConfig : CachingConfigurerSupport() {
     @Autowired

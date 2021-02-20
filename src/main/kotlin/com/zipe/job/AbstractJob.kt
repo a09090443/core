@@ -33,7 +33,7 @@ abstract class AbstractJob {
     protected lateinit var scheduler: Scheduler
 
     @Autowired
-    protected lateinit var scheduleJobService: IScheduleJobService
+    protected lateinit var scheduleJobServiceImpl: IScheduleJobService
 
     protected lateinit var result: ScheduleJobOutput
 
@@ -87,6 +87,7 @@ abstract class AbstractJob {
         endTime: LocalDateTime?,
         scheduleJob: ScheduleJob
     ): Trigger {
+        logger.info("Create Job : ${scheduleJob.jobName}")
         return TriggerBuilder.newTrigger()
             .forJob(jobDetail)
             .withIdentity(jobDetail.key.name, scheduleJob.jobName)
@@ -145,13 +146,13 @@ abstract class AbstractJob {
     @Throws(Exception::class)
     @Transactional
     protected fun saveOrUpdateScheduleJobStatus(input: ScheduleJobInput, status: ScheduleJobStatusEnum): ScheduleJob {
-        var scheduleJob: ScheduleJob
+        var scheduleJob = ScheduleJob()
         try {
-            scheduleJob = scheduleJobService.findByJobName(input.jobName) ?: ScheduleJob()
+            scheduleJob = scheduleJobServiceImpl.findByJobName(input.jobName) ?: ScheduleJob()
             BeanUtils.copyProperties(input, scheduleJob)
-            scheduleJob = scheduleJobService.save(input, status)
+            scheduleJob = scheduleJobServiceImpl.save(input, status)
         } catch (e: Exception) {
-            logger.error(e.message)
+            logger.error("Save job error : ${scheduleJob.jobName}")
             throw e
         }
         return scheduleJob

@@ -23,28 +23,28 @@ class SpringUtil : ApplicationContextAware, EnvironmentAware {
         private var sEnvironment: Environment by Delegates.notNull()
 
         /**
-         * 获取 ApplicationContext
+         * 獲取 ApplicationContext
          */
         fun getApplicationContext(): ApplicationContext {
             return sApplicationContext
         }
 
         /**
-         * 根据 name 获取 Bean
+         * 根據 name 獲取 Bean
          */
         fun getBean(name: String): Any {
             return sApplicationContext.getBean(name)
         }
 
         /**
-         * 通过 class 获取 Bean
+         * 通過 class 獲取 Bean
          */
         fun <T> getBean(clazz: Class<T>): T {
             return sApplicationContext.getBean(clazz)
         }
 
         /**
-         * 通过 name 和 class 获取 Bean
+         * 通過 name 和 class 獲取 Bean
          */
         fun <T> getBean(name: String, clazz: Class<T>): T {
             return sApplicationContext.getBean(name, clazz)

@@ -38,7 +38,7 @@ class ScheduleJobController : AbstractJob() {
     @Throws(Exception::class)
     fun delete(@RequestBody input: ScheduleJobInput): ScheduleJobOutput {
         try {
-            scheduleJobService.delete(input.jobName)
+            scheduleJobServiceImpl.delete(input.jobName)
         } catch (e: Exception) {
             logger.error("Error scheduling message", e)
             return result
