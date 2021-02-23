@@ -54,7 +54,9 @@ dependencies {
     api("org.apache.commons:commons-pool2:${property("pool2Version")}")
     api("redis.clients:jedis:${property("jedisVersion")}")
     api("p6spy:p6spy:${property("p6spyVersion")}")
-//    api("org.quartz-scheduler:quartz:${property("quartzVersion")}")
+    api("org.quartz-scheduler:quartz:${property("quartzVersion")}")
 
-    api("org.slf4j:slf4j-api:${property("slf4jApiVersion")}")
+    api("io.springfox:springfox-swagger2:${property("swagger2Version")}")
+    api("io.springfox:springfox-swagger-ui:${property("swagger2Version")}")
+    api("io.springfox:springfox-data-rest:${property("swagger2Version")}")
 }
