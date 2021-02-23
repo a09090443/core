@@ -59,4 +59,5 @@ dependencies {
     api("io.springfox:springfox-swagger2:${property("swagger2Version")}")
     api("io.springfox:springfox-swagger-ui:${property("swagger2Version")}")
     api("io.springfox:springfox-data-rest:${property("swagger2Version")}")
+    api("io.springfox:springfox-boot-starter:${property("swagger2Version")}")
 }
