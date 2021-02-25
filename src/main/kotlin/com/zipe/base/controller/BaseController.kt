@@ -12,7 +12,6 @@ import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-
 abstract class BaseController {
     protected lateinit var request: HttpServletRequest
     protected lateinit var response: HttpServletResponse
